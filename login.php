@@ -1,13 +1,29 @@
 <?php
 
+include './init.php';
+
+if(isset($_SESSION['auth'])) {
+    redirect('home');
+}
+
+$errors = [];
+
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    
-    if($email == 'mgmg@gmail.com' && $password == '123456789') {
-        echo "login success";
+
+    if(!$email) {
+        $errors['email'] = 'Email is required.';
+    } else if(!$password) {
+        $errors['password'] = 'Password is required.';
+    } else if($email == 'mgmg@gmail.com' && $password == 'password') {
+        $_SESSION['auth'] = [
+            'email' => $email,
+            'password' => $password,
+        ];
+        redirect('home');
     } else {
-        echo "Email or pasword is incorrect";
+        echo "Email or password is incorrect";
     }
 }
 
@@ -25,9 +41,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
 
     <form method="POST">
-        <input type="email" name="email">
+        <!-- <label for="email">Email</label> -->
+        <input type="email" id="email" name="email" placeholder="Enter Email">
+        <?php if(isset($errors['email'])): ?>
+            <br>
+            <span><?php echo $errors['email'] ?></span>
+        <?php endif; ?>
+       
         <br><br>
-        <input type="password" name="password">
+        <!-- <label for="password">Password</label> -->
+        <input type="password" id="password" name="password" placeholder="Enter Password">
+        <?php if(isset($errors['password'])): ?>
+            <br>
+            <span><?php echo $errors['password'] ?></span>
+        <?php endif; ?>
         <br><br>
         <button type="submit">Login</button>
     </form>
